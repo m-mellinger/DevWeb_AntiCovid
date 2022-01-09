@@ -2,6 +2,12 @@
     pageEncoding="UTF-8"%>
 <%@ page import="user.User" %>
 <%@ page import="SQL.SQLconnector" %>
+<%
+	User user = (User) request.getSession().getAttribute("current_user");
+	if(user == null) {
+		response.sendRedirect("main.jsp");
+	}
+%>
 <!DOCTYPE html>
 <head>
 
@@ -11,7 +17,7 @@
     <meta name="author" content="">
  
 
-    <title>inscription</title>
+    <title>profil</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/jumbotron/">
 
@@ -31,7 +37,6 @@
     </a>
     <div class="d-flex">
     	<%
-    		User user = (User) request.getSession().getAttribute("current_user");
 			if(user != null) {
 				out.println("<a href='compte.jsp'><img alt='Compte' src='"+user.getUrl()+"' width='30' height='30'></a>");
 				out.println("<a class='btn btn-outline-danger mx-4' href='../deconnexionServlet'>DECONNEXION</a>");
@@ -46,15 +51,8 @@
 </nav>
 
     <main role="main">
-
-      <div class="jumbotron bg-danger">
-        <div class="container">
-          <h1 class="display-3">Bienvenue sur AntiCovid!</h1>
-          <p>Soyez au courant des dernières nouvelles concernant le Covid-19 et votre entourage.</p>
-        </div>
-      </div>
       
-      <div class="container">
+     <div class="container">
       <div class="row">
        <% 
        	String msgErr = (String) request.getSession().getAttribute("msg-err"); 
@@ -72,49 +70,77 @@
        %>
        </div>
      	<div class="row">
+     		<div class="col-md-1">
+     		</div>
      	  <div class="col-md-6">
-     	  		<h2>Inscription : </h2>
+     			<h2>Votre profil : </h2>
      			<hr>
-     			<form method="post" action="../inscriptionServlet">
+     			<form method="post" action="../modifierProfilServlet">
      	  		<div class="col">
-     	  			<div class="form-group">
-  						<label for="url_photo" class="form-label">Choissiser une photo de profil:</label>
- 						<input class="form-control" type="url" name="urlPhoto" id="urlPhoto" placeholder="Entrer l'url de votre photo">
-					</div>
-				 	 <div class="form-group">
+     	  			 <div class="form-group">
+     	  			 	<%
+     	  			 		out.println("<img class='rounded mx-auto d-block' width='128' height='128' src='"+user.getUrl()+"'>");
+     	  				%>
+  						<label for="urlPhoto" class="form-label">Votre photo de profil:</label>
+  						<input class='form-control' type='url' name='urlPhoto' id='urlPhoto' value='<%out.println(user.getUrl());%>'>
+					 </div>
+				 	 <div class="form">
 				   		 <label for="login">Login :</label>
-				   		 <input type="text" class="form-control" id="login" name="login" placeholder="Entrer votre login" pattern="[^\s]{3,20}">
+				   		 <% 
+				   			out.println("<input type='text' class='form-control' id='login' name='login' value='"+user.getLogin()+"' pattern='[^\s]{3,20}' required>");
+				   		 %>
 				 	 </div>
-					
 					<div class="form-group">
 				   		 <label for="password">Mot de passe :</label>
-				   		 <input type="password" class="form-control" id="password" name="password" placeholder="Entrer votre mot de passe" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
+				   		 <%
+				   			out.println("<input type='password' class='form-control' id='password' name='password' value='"+user.getPassword()+"' pattern='(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}' required>");
+				   		%>
 					</div>
 					<div class="form-group">
 				 	 	 <label for="password">Confirmer le mot de passe :</label>
-				   		 <input type="password" class="form-control" id="passwordConf" name="passwordConf" placeholder="Confirmer votre mot de passe">
+				 	 	<%
+				 	 		out.println("<input type='password' class='form-control' id='passwordConf' name='passwordConf' value='"+user.getPassword()+"' required>");
+				 	 	%>
 					</div>
      			</div>
      			<div class="col">
      				<div class="form-group">
 				    	<label for="nom">Nom :</label>
-				    	<input type="text" class="form-control" id="nom" name="nom" placeholder="Entrer vote nom" pattern="[a-zA-Z]{2,20}">
+				    	<%
+				    		out.println("<input type='text' class='form-control' id='nom' name='nom' value='"+user.getNom()+"' pattern='[a-zA-Z]{2,20}' required>");
+				    	%>
 					</div>
 					<div class="form-group">
 				    	<label for="prenom">Prénom :</label>
-				    	<input type="text" class="form-control" id="prenom" name="prenom" placeholder="Entrer votre prénom" pattern="[a-zA-Z]{2,20}">
+				    	<%
+				    		out.println("<input type='text' class='form-control' id='prenom' name='prenom' value='"+user.getPrenom()+"' pattern='[a-zA-Z]{2,20}' required>");
+				    	%>
 					</div>
 					<div class="form-group">
 						<label for="birth">Date de naissance:</label>
-						<input type="date" class="form-control" id="birth" name="birth" value="1970-01-01" min="1850-01-01" max="2022-01-20">
+						<%
+							out.println("<input type='date' class='form-control' id='birth' name='birth' value='"+user.getDate()+"' min='1850-01-01' max='2022-01-09' required>");
+						%>
 					</div>
-				  	<button type="submit" class="btn btn-danger">S'inscrire</button>
-				  	<button type="reset" class="btn btn-outline-danger"> Reset </button>
+					<div class="row g-2">
+					<div class="col-sm">
+				  	<label for="mdpActuel">Mot de passe actuel :</label>
+				    <input type="password" class="form-control" id="mdpActuel" name="mdpActuel" pattern="(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}" required>
+				    </div>
+				    <div class="col-sm">
+				    <p> &ensp; </p>
+				  	<button type="submit" class="btn btn-danger">Valider les modifications</button>
+				  	</div>
+				  	</div>
      			</div>
      			</form>
      	  </div>
+          <div class="col-md-5">
+     	  </div>
      	</div>
      </div>
+
+	<hr>
     </main>
 
    

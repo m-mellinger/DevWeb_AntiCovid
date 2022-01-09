@@ -1,16 +1,15 @@
 package user;
 
-import java.sql.Date;
-
 public class User {
 	private int id;
 	private String nom;
 	private String prenom;
-	private String rang;
+	private String role;
 	private String password;
 	private String login;
 	private String date;
 	private boolean aCovid;
+	private String url;
 	
 	public int getId() {
 		return this.id;
@@ -32,12 +31,16 @@ public class User {
 		return this.login;
 	}
 	
-	public String getRang() {
-		return this.rang;
+	public String getRole() {
+		return this.role;
 	}
 	
 	public String getDate() {
 		return this.date;
+	}
+	
+	public String getUrl() {
+		return this.url;
 	}
 	
 	public Boolean getACovid() {
@@ -64,8 +67,8 @@ public class User {
 		this.login = login;
 	}
 	
-	public void setRang( String rang ) {
-		this.rang = rang;
+	public void setRole( String role ) {
+		this.role = role;
 	}
 	
 	public void setDate( String date ) {
@@ -80,4 +83,9 @@ public class User {
 			this.aCovid = false;
 		}
 	}
+	
+	public void setUrl( String url ) {
+		this.url = url;
+	}
+	
 }

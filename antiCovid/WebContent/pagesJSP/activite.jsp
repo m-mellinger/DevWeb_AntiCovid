@@ -2,6 +2,13 @@
     pageEncoding="UTF-8"%>
 <%@ page import="user.User" %>
 <%@ page import="SQL.SQLconnector" %>
+<%@ page import="java.sql.*" %>
+<%
+	User user = (User) request.getSession().getAttribute("current_user");
+	if(user == null) {
+		response.sendRedirect("main.jsp");
+	}
+%>
 <!DOCTYPE html>
 <head>
 
@@ -11,12 +18,13 @@
     <meta name="author" content="">
  
 
-    <title>antiCovid</title>
+    <title>Activités</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/jumbotron/">
 
     <!-- Bootstrap core CSS -->
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link href="jumbotron.css" rel="stylesheet">
@@ -31,7 +39,6 @@
     </a>
     <div class="d-flex">
     	<%
-    		User user = (User) request.getSession().getAttribute("current_user");
 			if(user != null) {
 				out.println("<a href='compte.jsp'><img alt='Compte' src='"+user.getUrl()+"' width='30' height='30'></a>");
 				out.println("<a class='btn btn-outline-danger mx-4' href='../deconnexionServlet'>DECONNEXION</a>");
@@ -46,52 +53,52 @@
 </nav>
 
     <main role="main">
+   
+     <div class="container">
+     <div class="row">
+      <div class="col-md-12">
+      	<br>
+		<nav aria-label="breadcrumb">
+ 			<ol class="breadcrumb">
+    			<li class="breadcrumb-item"><a href="main.jsp">Home</a></li>
+    			<li class="breadcrumb-item active" aria-current="page">Activités</li>
+ 		 	</ol>
+ 		 </div>
+		</nav>
+		</div>
+		<br>
+		<div class="row">
+			<div class="col-md-9">
+				<h2>Vos activités :</h2>
+					<% 
+						SQLconnector sc = new SQLconnector();
+						ResultSet activites = sc.doRequest("SELECT * FROM activite WHERE id_user = '" + user.getId() + "'");
+							while(activites.next()) {
+								out.println("<div class='p-2 mb-2 border border-danger'>");
+								out.println("<div class='row'>");
+								out.println("<div class='col-md-9'>");
+								out.println(
+									     activites.getString("nom") + "<br>" +
+									     "Date: "+activites.getString("date") + "<br>" +
+									     "Heure de début: "+activites.getString("heure_debut") + "<br>" +
+									     "Heure de fin: "+activites.getString("heure_fin")+"<br>");
+								ResultSet lieux = sc.doRequest("SELECT * FROM lieu WHERE id = '" + activites.getString("id_lieu") + "';");
+								while(lieux.next()) {
+									out.println("Lieu: "+lieux.getString("nom") +
+											"</div><div class='col-md-3'><a class='btn btn-outline-danger' href='../supprimerActiviteServlet?param="+activites.getInt("id")+"'>Supprimer</a>"
+											);
+								}
+								out.println("</div>");
+								out.println("</div>");
+								out.println("</div>");
+								out.println("<br>");
+							}
+					%>
+			</div>
+			<div class="col-md-3">
+				<a class="btn btn-danger mx-2" role="button" href="declarerActivite.jsp">Déclarer une activité</a>
+			</div>
 
-      <div class="jumbotron bg-danger">
-        <div class="container">
-          <h1 class="display-3">Bienvenue sur AntiCovid!</h1>
-          <p>Soyez au courant des dernières nouvelles concernant le Covid-19 et votre entourage.</p>
-        </div>
-      </div>
-      <div class="container">
-      <div class="row">
-       <% 
-       	String msgErr = (String) request.getSession().getAttribute("msg-err"); 
-       	if(msgErr!=null){
-    	   	out.println("<div class='container'>");
-    	   		out.println("<div class='row'>");
-    	   			out.println("<div class='col-md-12'>");
-    	   				out.println("<div class='alert alert-danger' role='alert'>");
-    	   					out.println(msgErr);
-    	   				out.println("</div>");
-    	   			out.println("</div>");
-    	   		out.println("</div>");
-    	   	out.println("</div>");
-       	   }
-       %>
-       </div>
-     	<div class="row">
-     	  <div class="col-md-6">
-     			<h2>Connexion : </h2>
-     			<hr>
-     			<form method="post" action="../connexionServlet">
-     			
-				  <div class="form-group">
-				    <label for="login">Login :</label>
-				    <input type="text" class="form-control" id="login" name="login" placeholder="Entrer votre login" required>
-				  </div>
-				
-				<div class="form-group">
-				    <label for="password">Mot de passe :</label>
-				    <input type="password" class="form-control" id="password" name="password" placeholder="Entrer votre mot de passe" required>
-				</div>
-
-				  <button type="submit" class="btn btn-danger">Se connecter</button>
-				  <button type="reset" class="btn btn-outline-danger"> Reset </button>
-				</form>
-     	  </div>
-         <hr>
-     	</div>
      </div>
     </main>
 

@@ -1,7 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="user.User" %>
-
+<%@ page import="SQL.SQLconnector" %>
+<%@ page import="java.sql.*" %>
+<%
+	User user = (User) request.getSession().getAttribute("current_user");
+	if(user == null || !user.getRole().equals("admin")) {
+		response.sendRedirect("main.jsp");
+	}
+%>
 <!DOCTYPE html>
 <head>
 
@@ -11,91 +18,146 @@
     <meta name="author" content="">
  
 
-    <title>Jumbotron Template for Bootstrap</title>
+    <title>Gérer le site</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/jumbotron/">
 
     <!-- Bootstrap core CSS -->
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link href="jumbotron.css" rel="stylesheet">
 
 </head>
 <body>
- <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-      <a class="navbar-brand" href="#">Navbar</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link disabled" href="#">Disabled</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</a>
-            <div class="dropdown-menu" aria-labelledby="dropdown01">
-              <a class="dropdown-item" href="#">Action</a>
-              <a class="dropdown-item" href="#">Another action</a>
-              <a class="dropdown-item" href="#">Something else here</a>
-            </div>
-          </li>
-        </ul>
-        <form class="form-inline my-2 my-lg-0">
-          <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form>
-      </div>
-    </nav>
+ <nav class="navbar navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="main.jsp">
+      <img src="../images/logo.png" alt="" width="40" height="40" class="d-inline-block align-text-top">
+      AntiCovid
+    </a>
+    <div class="d-flex">
+    	<%
+			if(user != null) {
+				out.println("<a href='compte.jsp'><img alt='Compte' src='"+user.getUrl()+"' width='30' height='30'></a>");
+				out.println("<a class='btn btn-outline-danger mx-4' href='../deconnexionServlet'>DECONNEXION</a>");
+			}else{
+				out.println("<a class='btn btn-outline-danger mx-2' href='inscription.jsp'>INSCRIPTION</a>");
+				
+				out.println("<a class='btn btn-danger mx-2' href='connexion.jsp'>CONNEXION</a>");
+			}
+		%>
+    </div>
+  </div>
+</nav>
 
     <main role="main">
 
-      <!-- Main jumbotron for a primary marketing message or call to action -->
-      <div class="jumbotron">
-        <div class="container">
-          <h1 class="display-3">Hello, world!</h1>
-          <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-          <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>
-        </div>
-      </div>
+	<div class="container">
+	<div class="row">
+      <div class="col-md-12">
+      	<br>
+		<nav aria-label="breadcrumb">
+ 			<ol class="breadcrumb">
+    			<li class="breadcrumb-item"><a href="main.jsp">Home</a></li>
+    			<li class="breadcrumb-item active" aria-current="page">Gérer le site</li>
+ 		 	</ol>
+		</nav>
+		</div>
+	 </div>
+	 <br>
+	 <div>
+	 	<a class='btn btn-outline-danger mx-2' onclick='afficheUsers()'>Utilisateurs</a>
+	 	<a class='btn btn-outline-danger mx-2' onclick='afficheActivites()'>Activités</a>
+	 	<a class='btn btn-outline-danger mx-2' onclick='afficheLieux()'>Lieux</a>
+	 </div>
+	 <br>
+	 <script type="text/javascript">
+     	  	function afficheUsers(){
+     	  		document.getElementById("users").hidden = false;
+     	  		document.getElementById("activites").hidden = true;
+     	  		document.getElementById("lieux").hidden = true;
+     	  	}
+     	  	function afficheActivites(){
+     	  		document.getElementById("activites").hidden = false;
+     	  		document.getElementById("users").hidden = true;
+     	  		document.getElementById("lieux").hidden = true;
+     	  	}
+     	  	function afficheLieux(){
+     	  		document.getElementById("lieux").hidden = false;
+     	  		document.getElementById("users").hidden = true;
+     	  		document.getElementById("activites").hidden = true;
+     	  	}
+     	  	</script>
+     <div id="users" hidden>
+		<h2>Les utilisateurs présents sur le site :</h2>
+			<% 
+				SQLconnector sc = new SQLconnector();
+				sc = new SQLconnector();
+				ResultSet users = sc.doRequest("SELECT * FROM user");
+				while(users.next()) {
+					out.println("<div class='p-2 mb-2 border border-danger'>");
+					out.println("<div class='row'>");
+					out.println("<div class='col-md-10'>");
+					out.println(users.getString("nom") + " " + users.getString("prenom")+"<br> login: "+users.getString("login")+"<br>");
+					User a = sc.getUser(users.getInt("id"));
+					if(a.getACovid()){
+						out.println("<div class='text-danger'>Positif</div>");
+					}
+					else{
+						out.println("<div class='text-success'>Pas positif</div>");
+					}
+					out.println("</div><div class='col-md-2'><a class='btn btn-outline-danger' href='../supprimerUserServlet?param="+users.getInt("id")+"'>Supprimer</a>");
+					out.println("</div>");
+					out.println("</div>");
+					out.println("</div>");
+				}
+			%>
 
-
-     <div class="container">
-     	<div class="row">
-     	  	<h1>You are logged as an administrator!</h1>
-     	  	<hr>
-     	  	</br>
-     	  	</br>
-     	  	<div class="col-md-12">
-     	  	
-				<% User current_user = (User) session.getAttribute("current_user") ;%>
-				
-     	  		<h3> Your login is : <% out.print(current_user.getLogin()); %> </h3> 
-     	  		<h3> Your password is : <% out.print(current_user.getPassword()); %> </h3> 
-     	  		<h3> Your name is : <% out.print(current_user.getPrenom()); %> </h3> 
-     	  		<h3> Your last name is : <% out.print(current_user.getNom()); %> </h3> 
-     	  		<h3> Your birth date is : <% out.print(current_user.getDate()); %> </h3>
-     	  		
-     	  	</div>
-         <hr>
-     	</div>
      </div>
+     <div id="activites" hidden>
+		<h2>Les activités déclarées sur le site :</h2>
+			<% 
+				ResultSet activites = sc.doRequest("SELECT * FROM activite");
+				while(activites.next()) {
+					out.println("<div class='p-2 mb-2 border border-danger'>");
+					out.println("<div class='row'>");
+					out.println("<div class='col-md-10'>");
+					out.println(activites.getString("nom") + "<br> Date: " + activites.getString("date")+"<br> Heure de debut: "+activites.getString("heure_debut")+"<br> Heure de fin: "+activites.getString("heure_fin"));
+					ResultSet lieu = sc.doRequest("SELECT * FROM lieu where id='"+activites.getInt("id_lieu")+"'");
+					while(lieu.next()) {
+						out.println("<br>Lieu: "+lieu.getString("nom"));
+					}
+					out.println("</div><div class='col-md-2'><a class='btn btn-outline-danger' href='../supprimerActiviteServlet?param="+activites.getInt("id")+"'>Supprimer</a>");
+					out.println("</div>");
+					out.println("</div>");
+					out.println("</div>");
+				}
+			%>
 
-	<hr>
-	</br>
+     </div>
+     <div id="lieux" hidden>
+		<h2>Les lieux identifiés sur le site :</h2>
+			<% 
+				ResultSet lieux = sc.doRequest("SELECT * FROM lieu");
+				while(lieux.next()) {
+					out.println("<div class='p-2 mb-2 border border-danger'>");
+					out.println("<div class='row'>");
+					out.println("<div class='col-md-10'>");
+					out.println(lieux.getString("nom") + "<br> Adresse: " + lieux.getString("adresse")+"<br> Code postal: "+lieux.getInt("code_postal"));
+					out.println("</div><div class='col-md-2'><a class='btn btn-outline-danger' href='../supprimerLieuServlet?param="+lieux.getInt("id")+"'>Supprimer</a>");
+					out.println("</div>");
+					out.println("</div>");
+					out.println("</div>");
+				}
+			%>
+
+     </div>
+    </div>
     </main>
 
-    <footer class="container">
-      <p>&copy; Company 2017-2018</p>
-    </footer>
+   
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
@@ -104,5 +166,5 @@
     <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
     <script src="../../assets/js/vendor/popper.min.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
-  </body>
+    </body>
 </html>

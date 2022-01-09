@@ -12,19 +12,18 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import SQL.SQLconnector;
-import user.User;
 
 /**
- * Servlet implementation class connexionServlet
+ * Servlet implementation class ajouterLieuServlet
  */
-@WebServlet("/connexionServlet")
-public class connexionServlet extends HttpServlet {
+@WebServlet("/ajouterLieuServlet")
+public class ajouterLieuServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public connexionServlet() {
+    public ajouterLieuServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -42,31 +41,39 @@ public class connexionServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String login = request.getParameter("login");
-        String password = request.getParameter("password");
-        HttpSession session = request.getSession();
-        SQLconnector sc = new SQLconnector();
-        ResultSet res = sc.doRequest("SELECT * FROM user where login='"+login+"' AND password='"+password+"'");
-        try {
-			if(res.next()) {
-				User user = sc.getUser(login, password);
-				if((user.getLogin()!=null) && (user.getPassword()!=null)) {
-			    	session.setAttribute("current_user", user);
-			    	session.setAttribute("msg-err",null);
-					response.sendRedirect("pagesJSP/main.jsp");
-			    }
+		String nom = request.getParameter("nom");
+		String adresse = request.getParameter("adresse");
+		String cPostal = request.getParameter("cPostal");
+		
+		HttpSession session = request.getSession();
+		SQLconnector sc = new SQLconnector();
+		ResultSet res = sc.doRequest("SELECT * FROM lieu where code_postal='"+cPostal+"'");
+		try {
+			int i=0;
+			boolean stop = false;
+			while(res.next() && !stop) {
+				i++;
+				if(res.getString("adresse").equalsIgnoreCase(adresse)) {
+					session.setAttribute("msg-err"," Création du lieu impossible: ce lieu existe déjà.");
+				}
+				else {
+					sc.createLieu(nom, adresse, Integer.parseInt(cPostal));
+					session.setAttribute("msg-err",null);
+					stop = true;
+				}
+			}
+			if(i==0) {
+				sc.createLieu(nom, adresse, Integer.parseInt(cPostal));
+				session.setAttribute("msg-err",null);
+				response.sendRedirect("pagesJSP/declarerActivite.jsp");
 			}
 			else {
-				session.setAttribute("msg-err"," Login et/ou mot de passe incorrect/s");
-				
-				session.setAttribute("current_user",null);
-				response.sendRedirect("pagesJSP/connexion.jsp");
+				response.sendRedirect("pagesJSP/declarerActivite.jsp");
 			}
-		} catch (SQLException | IOException e) {
+		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        
 	}
 
 }
