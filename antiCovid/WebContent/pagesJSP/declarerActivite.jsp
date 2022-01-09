@@ -29,7 +29,7 @@
     <!-- Custom styles for this template -->
     <link href="jumbotron.css" rel="stylesheet">
     
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDNKwXT3ffAoqhAnG1pViBXHXc8KsywcPE&callback=initAutocomplete&libraries=places&v=weekly" async ></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=&callback=initAutocomplete&libraries=places&v=weekly" async ></script>
     <script>
     	function initialize() {
     	  var input = document.getElementById('adresse');
