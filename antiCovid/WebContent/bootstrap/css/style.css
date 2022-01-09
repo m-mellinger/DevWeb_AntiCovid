@@ -1,0 +1,83 @@
+.texte-centre
+{
+  text-align: center;
+}
+
+.texte-droite
+{
+  text-align: right;
+}
+
+.bgImage
+{
+  margin: 0;
+  padding: 0;
+  background: url("../Images/taverne.jpg") no-repeat center fixed;
+  -webkit-background-size: cover;
+  background-size: cover;
+
+}
+
+.bgImageNav
+{
+  margin: 0;
+  padding: 0;
+  background: url("../Images/drakkar.jpg") no-repeat center fixed;
+  -webkit-background-size: cover;
+  background-size: cover;
+}
+
+.bgColor
+{
+  background-color:  #f8d779;
+  border-color: #f0ad4e;
+ margin: 5% 0;
+}
+
+.bgIngredient
+{
+  background-color:  #f8d779;
+  border-color: #f0ad4e;
+  margin: 1% 0;
+}
+.btnColor
+{
+  background-color:  #e74c3c;
+  padding: 10px;
+  margin: 10px;
+}
+
+.btnIngredient
+{
+  background-color:  #477b83;
+  padding: 7px;
+  margin: 5px;
+}
+
+.textWhite
+{
+  color: white;
+}
+
+.bold
+{
+  font-weight: bold;
+}
+
+.arrondi-droite
+{
+  border-top-right-radius: 5%;
+  border-bottom-right-radius: 5%;
+  padding-left: 5%;
+  padding-top: 1%;
+
+}
+
+.arrondi-gauche
+{
+  border-top-left-radius: 5%;
+  border-bottom-left-radius: 5%;
+  padding-left: 5%;
+  padding-top: 1%;
+
+}
